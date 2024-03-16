@@ -157,7 +157,7 @@ const Profile = () => {
         setimagePreview('')
         setSelectedFile({})
         const savedImage = response.data.savedImage;
-        setItems(prevItems => [...prevItems, savedImage])
+        setItems(prevItems => [savedImage, ...prevItems])
       } else {
         toast({
           title: "Failed to upload image",
