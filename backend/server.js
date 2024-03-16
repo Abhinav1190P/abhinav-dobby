@@ -10,7 +10,7 @@ const server = http.createServer(app);
 
 // Here we connect the database to our server DB name is campusconnect
 mongoose
-  .connect('mongodb://127.0.0.1:27017/dobby')
+  .connect(process.env.MONGO_URL)
   .then(() => {
     console.log("mongodb connected");
 // Server.listen means on which PORT will the server be running (just like different services that run on your pc)
