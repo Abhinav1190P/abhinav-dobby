@@ -10,6 +10,10 @@ const imageSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'auth',
         required: true
+    },
+    name: {
+        type: String,
+        required: true
     }
 }, {
 

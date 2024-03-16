@@ -12,4 +12,3 @@ const App = () => {
 
 export default App;
 
-// Lets fix all errors one by one

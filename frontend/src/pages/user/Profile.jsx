@@ -9,8 +9,11 @@ import {
   FormControl,
   FormErrorMessage,
   useDisclosure,
+  useToast,
   ModalCloseButton,
   HStack,
+  Flex,
+  Spinner,
 } from "@chakra-ui/react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,6 +22,8 @@ import { Controller, useForm } from "react-hook-form";
 import { AddIcon } from "@chakra-ui/icons";
 import { catchError } from "../../utils/catchError";
 import { useDropzone } from 'react-dropzone';
+import axios from 'axios'
+
 
 const schema = z.object({
   name: z
@@ -47,13 +52,18 @@ const Profile = () => {
   const [filteredImages, setFilteredImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const cloudinaryAsset = process.env.REACT_APP_CLOUDINARY_ASSET;
+  const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+  const [selectedFile, setSelectedFile] = useState({})
+  const [imagePreview, setimagePreview] = useState('')
+  const toast = useToast()
   const {
     control,
     formState: { errors },
     handleSubmit,
     setValue,
-    getValues
+    getValues,
+    reset
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues,
@@ -83,28 +93,81 @@ const Profile = () => {
     maxFiles: 1,
     onDrop: acceptedFiles => {
       if (acceptedFiles.length > 0) {
+        console.log(acceptedFiles)
         const imageUrl = URL.createObjectURL(acceptedFiles[0]);
-        setValue('image', imageUrl);
+        setimagePreview(imageUrl);
+        setSelectedFile(acceptedFiles[0])
+        setValue('image', imageUrl)
       }
     }
   });
 
-
-  const onSubmit = async (data) => {
+  const uploadImage = async () => {
     try {
-      console.log(data)
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("upload_preset", cloudinaryAsset);
+
+      const { data: cloudinaryData } = await axios.post(
+        `https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/upload`,
+        formData
+      );
+
+      return cloudinaryData.secure_url;
+    } catch (error) {
+      console.error("Error uploading image to Cloudinary:", error);
+      throw error;
+    }
+  };
+
+  const onSubmit = async (imageData) => {
+    try {
       setLoading(true);
+      const image_url = await uploadImage();
+      setValue(image_url);
+
+      const response = await api.post('/api/user/create-image', {
+        imageUrl: image_url,
+        name: imageData.name
+      });
+
+      if (response.data.success) {
+        toast({
+          title: "Image uploaded successfully",
+          status: 'success',
+          duration: 9000,
+          position: 'top',
+          isClosable: true,
+        });
+        reset()
+        onClose()
+        setimagePreview('')
+        setSelectedFile({})
+      } else {
+        toast({
+          title: "Failed to upload image",
+          description: response.data.message,
+          status: 'error',
+          duration: 9000,
+          position: 'top',
+          isClosable: true,
+        });
+      }
     } catch (error) {
       setError(catchError(error));
+    } finally {
       setLoading(false);
     }
   };
+
 
   const handleSearch = () => {
   };
 
   const handleAddImage = () => {
   };
+
+
 
   return (
     <Container>
@@ -133,38 +196,47 @@ const Profile = () => {
               <ModalHeader>Add your Image</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
-                  <Controller
-                    name="name"
-                    control={control}
-                    render={({ field }) => (
-                      <FormControl pb={5} isInvalid={errors.name}>
-                        <InputGroup>
-                          <Input {...field} placeholder="Name" />
-                        </InputGroup>
-                        <FormErrorMessage mt={1} fontSize="x-small">{errors?.name?.message}</FormErrorMessage>
-                      </FormControl>
-                    )}
-                  />
+                {
+                  loading ? (
+                    <Flex pb={10} w="100%" h="100%" alignItems={'center'} justifyContent={'center'}>
+                      <Spinner />
+                    </Flex>
+                  ) : (
+                    <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+                      <Controller
+                        name="name"
+                        control={control}
+                        render={({ field }) => (
+                          <FormControl pb={5} isInvalid={errors.name}>
+                            <InputGroup>
+                              <Input {...field} placeholder="Name" />
+                            </InputGroup>
+                            <FormErrorMessage mt={1} fontSize="x-small">{errors?.name?.message}</FormErrorMessage>
+                          </FormControl>
+                        )}
+                      />
 
-                  <div {...getRootProps()}>
-                    <input {...getInputProps()} />
-                    {acceptedFiles.length > 0 ? (
-                      <Image src={getValues('image')} alt="Preview" style={{ width: "100%", height: "auto" }} />
-                    ) : (
-                      <Box mb={5} border={'1px'} borderColor={'gray.100'} borderStyle={'dashed'} borderRadius={10} p={10}>
-                        <Text>Drag 'n' drop an image here, or click to select an image</Text>
-                      </Box>
-                    )}
-                  </div>
-                  {errors.image && <span>{errors.image.message}</span>}
-                  <HStack mt={4} pb={5} w="100%" alignItems={'flex-end'} justifyContent={'flex-end'}>
-                    <Button variant={'ghost'} mr={3} onClick={onClose}>
-                      Close
-                    </Button>
-                    <Button type="submit" colorScheme="blue">Submit</Button>
-                  </HStack>
-                </form>
+                      <div {...getRootProps()}>
+                        <input {...getInputProps()} />
+                        {acceptedFiles.length > 0 ? (
+                          <Image src={imagePreview} alt="Preview" style={{ width: "100%", height: "auto" }} />
+                        ) : (
+                          <Box mb={5} border={'1px'} borderColor={'gray.100'} borderStyle={'dashed'} borderRadius={10} p={10}>
+                            <Text>Drag 'n' drop an image here, or click to select an image</Text>
+                          </Box>
+                        )}
+                      </div>
+                      {errors.image && <span>{errors.image.message}</span>}
+                      <HStack mt={4} pb={5} w="100%" alignItems={'flex-end'} justifyContent={'flex-end'}>
+                        <Button variant={'ghost'} mr={3} onClick={onClose}>
+                          Close
+                        </Button>
+                        <Button type="submit" colorScheme="blue">Submit</Button>
+                      </HStack>
+                    </form>
+                  )
+                }
+
               </ModalBody>
             </ModalContent>
           </Modal>

@@ -3,11 +3,14 @@
 
 const { Router } = require("express");
 const userController = require("../../controllers/user");
+const imageController = require("../../controllers/image")
 
 const router = Router();
 
 // GET: /api/user/profile this is an example (for the user route)
 
 router.use("/profile", userController.profile);
+
+router.use('/create-image', imageController.createImage)
 
 module.exports = router;
