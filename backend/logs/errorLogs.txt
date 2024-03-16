@@ -43,3 +43,4 @@
 2024-Mar-17(12:54:46 AM)	27d2e979-fa91-4b32-8e47-7f70fe342044	MongooseError: Resource not found!
 2024-Mar-17(12:54:46 AM)	8d935ea1-74c1-4662-b0b5-56c97890d710	MongooseError: Resource not found!
 2024-Mar-17(12:54:46 AM)	e13dceee-0ea0-4241-9b61-05908ababfe2	MongooseError: Resource not found!
+2024-Mar-17(2:06:30 AM)	3c835fe2-efbf-4ea5-aaf3-4cab048909fa	Error: Incorrect username or passowrd!

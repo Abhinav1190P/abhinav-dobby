@@ -303,40 +303,49 @@ const Profile = () => {
             ))}
           </SimpleGrid>
 
+          {
+            items.length > 0 ? (
 
-          <InfiniteScroll
-            dataLength={totalPosts}
-            next={fetchMoreData}
-            hasMore={items.length < totalPosts}
-            loader={<Flex w="400px" justifyContent={'center'} alignItems={'center'}><Text>Loading...</Text></Flex>}
-            endMessage={<Flex mt={5} pb={10} w="100%" justifyContent={'center'} alignItems={'center'}><Text>No more items to load</Text></Flex>}
-          >
-            {items && items.length > 0 && (
-              <>
-                <Heading as="h2" mt="8" mb="4">Your Images</Heading>
-                {items
-                  .filter((image) => image.name.toLowerCase().includes(searchQuery.toLowerCase()))
-                  .map((image, index) => (
-                    <Box mb={5} key={index} borderWidth="1px" borderRadius="lg" overflow="hidden">
-                      {image.isLoading ? (
-                        <Skeleton height="200px" width="100%" />
-                      ) : (
-                        <Image
-                          src={image.image_url}
-                          alt={image.name}
-                          onLoad={() => {
-                            const updatedItems = [...items];
-                            updatedItems[index].isLoading = false;
-                            setItems(updatedItems);
-                          }}
-                        />
-                      )}
-                      <Text>{image.name}</Text>
-                    </Box>
-                  ))}
-              </>
-            )}
-          </InfiniteScroll>
+              <InfiniteScroll
+                dataLength={totalPosts}
+                next={fetchMoreData}
+                hasMore={items.length < totalPosts}
+                loader={<Flex w="400px" justifyContent={'center'} alignItems={'center'}><Text>Loading...</Text></Flex>}
+                endMessage={<Flex mt={5} pb={10} w="100%" justifyContent={'center'} alignItems={'center'}><Text>No more items to load</Text></Flex>}
+              >
+                {items && items.length > 0 && (
+                  <>
+                    <Heading as="h2" mt="8" mb="4">Your Images</Heading>
+                    {items
+                      .filter((image) => image.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                      .map((image, index) => (
+                        <Box mb={5} key={index} borderWidth="1px" borderRadius="lg" overflow="hidden">
+                          {image.isLoading ? (
+                            <Skeleton height="200px" width="100%" />
+                          ) : (
+                            <Image
+                              src={image.image_url}
+                              alt={image.name}
+                              onLoad={() => {
+                                const updatedItems = [...items];
+                                updatedItems[index].isLoading = false;
+                                setItems(updatedItems);
+                              }}
+                            />
+                          )}
+                          <Text>{image.name}</Text>
+                        </Box>
+                      ))}
+                  </>
+                )}
+              </InfiniteScroll>
+            ) : (
+              <Flex w="100%" alignItems={'center'} justifyContent={'center'}>
+                Start uploading images!
+              </Flex>
+            )
+          }
+
         </>
       ) : (
         <Text>Loading...</Text>
