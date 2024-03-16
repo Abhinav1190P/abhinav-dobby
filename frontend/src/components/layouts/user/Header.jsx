@@ -16,7 +16,7 @@ import {
   Center,
 } from '@chakra-ui/react'
 import { MoonIcon, SunIcon } from '@chakra-ui/icons'
-
+import useAuth from '../../../hooks/useAuth'
 const NavLink = ({ children }) => {
   return (
     <Box
@@ -38,6 +38,7 @@ const NavLink = ({ children }) => {
 export default function Header() {
   const { colorMode, toggleColorMode } = useColorMode()
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const {user, logout} = useAuth()
   return (
     <>
       <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
@@ -73,13 +74,11 @@ export default function Header() {
                   </Center>
                   <br />
                   <Center>
-                    <Text>Username</Text>
+                    <Text>{user ? user.userName:null}</Text>
                   </Center>
                   <br />
                   <MenuDivider />
-                  <MenuItem>Your Servers</MenuItem>
-                  <MenuItem>Account Settings</MenuItem>
-                  <MenuItem>Logout</MenuItem>
+                  <MenuItem onClick={logout}>Logout</MenuItem>
                 </MenuList>
               </Menu>
             </Stack>

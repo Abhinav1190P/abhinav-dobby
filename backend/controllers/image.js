@@ -19,8 +19,25 @@ const createImage = async (req, res, next) => {
         return res.status(201).json({ success: true, savedImage });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ success: false,message: "Internal server error" });
+        return res.status(500).json({ success: false, message: "Internal server error" });
     }
 }
 
-module.exports = { createImage };
+const getImages = async (req, res, next) => {
+    const page = req.params.page;
+    const size = req.params.size;
+
+    try {
+        const skip = (page - 1) * size;
+
+        const total = await Image.countDocuments({ userId: req.user.userId });
+        let images = await Image.find({userId:req.user.userId}).skip(skip).limit(size);
+
+        return res.json({ images, total });
+    } catch (error) {
+        next(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+module.exports = { createImage, getImages };

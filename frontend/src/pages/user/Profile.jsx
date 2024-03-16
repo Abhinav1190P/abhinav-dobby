@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Heading, Container, Text, Box, Input, Button, SimpleGrid, Image, InputRightElement, InputGroup, IconButton, Modal,
   ModalOverlay,
@@ -11,9 +11,12 @@ import {
   useDisclosure,
   useToast,
   ModalCloseButton,
+  useColorMode,
   HStack,
   Flex,
+  Skeleton,
   Spinner,
+  VStack,
 } from "@chakra-ui/react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +26,7 @@ import { AddIcon } from "@chakra-ui/icons";
 import { catchError } from "../../utils/catchError";
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios'
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 
 const schema = z.object({
@@ -56,7 +60,16 @@ const Profile = () => {
   const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
   const [selectedFile, setSelectedFile] = useState({})
   const [imagePreview, setimagePreview] = useState('')
+  const [page, setPage] = useState(1);
+  const [activePage, setActivePage] = useState(1);
+  const LIMIT = 3;
+  const [totalPosts, setTotalPosts] = useState(0);
+  const [items, setItems] = useState([]);
+  const { colorMode, toggleColorMode } = useColorMode()
+
   const toast = useToast()
+
+
   const {
     control,
     formState: { errors },
@@ -78,7 +91,7 @@ const Profile = () => {
         setInfo(null);
         console.error(error);
       });
-  }, []);
+  }, [api]);
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   useEffect(() => {
@@ -93,7 +106,7 @@ const Profile = () => {
     maxFiles: 1,
     onDrop: acceptedFiles => {
       if (acceptedFiles.length > 0) {
-        console.log(acceptedFiles)
+
         const imageUrl = URL.createObjectURL(acceptedFiles[0]);
         setimagePreview(imageUrl);
         setSelectedFile(acceptedFiles[0])
@@ -164,31 +177,73 @@ const Profile = () => {
   const handleSearch = () => {
   };
 
-  const handleAddImage = () => {
-  };
 
+
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        await api.get(`/api/user/get-images/${page}/${LIMIT}`)
+          .then(({ data }) => {
+
+            setTotalPosts(data.total);
+            setItems(data?.images);
+          })
+          .catch((error) => {
+            setInfo(null);
+            console.error(error);
+          });
+
+      } catch (error) {
+        console.error("Error fetching chats:", error);
+      }
+    };
+
+    fetchPosts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [info]);
+
+  const fetchMoreData = useCallback(() => {
+    try {
+      api.get(`/api/user/get-images/${activePage + 1}/${LIMIT}`)
+        .then(({ data }) => {
+          setActivePage(activePage => activePage + 1); // Functional update to avoid dependency warning
+          setItems(prevItems => [...prevItems, ...data.images]);
+          setPage(prevPage => prevPage + 1); // Functional update to avoid dependency warning
+        })
+        .catch((error) => {
+          setInfo(null);
+          console.error(error);
+        });
+
+    } catch (error) {
+      console.error("Error fetching chats:", error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items.length, info]);
 
 
   return (
     <Container>
       {info ? (
         <>
-          <Heading as="h1" mb="4">Welcome, {info.name}</Heading>
-          <Box mb="4">
-            <InputGroup>
-              <Input
-                mb={4}
-                placeholder="Search by image name"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <InputRightElement>
-                <IconButton onClick={onOpen} colorScheme="blue" >
-                  <AddIcon />
-                </IconButton>
-              </InputRightElement>
-            </InputGroup>
-            <Button onClick={handleSearch}>Search</Button>
+          <Box bg={colorMode === 'dark' ? '#1A202C' : 'white'} position="sticky" top="0" zIndex="sticky" p="4" mb="4">
+            <Heading as="h1" mb="4">Welcome, {info.name}</Heading>
+            <Box mb="4">
+              <InputGroup>
+                <Input
+                  mb={4}
+                  placeholder="Search by image name"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <InputRightElement>
+                  <IconButton onClick={onOpen} colorScheme="blue">
+                    <AddIcon />
+                  </IconButton>
+                </InputRightElement>
+              </InputGroup>
+            </Box>
           </Box>
           <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
@@ -236,7 +291,6 @@ const Profile = () => {
                     </form>
                   )
                 }
-
               </ModalBody>
             </ModalContent>
           </Modal>
@@ -248,19 +302,41 @@ const Profile = () => {
               </Box>
             ))}
           </SimpleGrid>
-          {info.images && info.images.length > 0 && (
-            <>
-              <Heading as="h2" mt="8" mb="4">Your Images</Heading>
-              <SimpleGrid columns={3} spacing={4}>
-                {info.images.map((image, index) => (
-                  <Box key={index} borderWidth="1px" borderRadius="lg" overflow="hidden">
-                    <Image src={image.url} alt={image.name} />
-                    <Text>{image.name}</Text>
-                  </Box>
-                ))}
-              </SimpleGrid>
-            </>
-          )}
+
+
+          <InfiniteScroll
+            dataLength={totalPosts}
+            next={fetchMoreData}
+            hasMore={items.length < totalPosts}
+            loader={<Flex w="400px" justifyContent={'center'} alignItems={'center'}><Text>Loading...</Text></Flex>}
+            endMessage={<Flex mt={5} pb={10} w="100%" justifyContent={'center'} alignItems={'center'}><Text>No more items to load</Text></Flex>}
+          >
+            {items && items.length > 0 && (
+              <>
+                <Heading as="h2" mt="8" mb="4">Your Images</Heading>
+                {items
+                  .filter((image) => image.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .map((image, index) => (
+                    <Box mb={5} key={index} borderWidth="1px" borderRadius="lg" overflow="hidden">
+                      {image.isLoading ? (
+                        <Skeleton height="200px" width="100%" />
+                      ) : (
+                        <Image
+                          src={image.image_url}
+                          alt={image.name}
+                          onLoad={() => {
+                            const updatedItems = [...items];
+                            updatedItems[index].isLoading = false;
+                            setItems(updatedItems);
+                          }}
+                        />
+                      )}
+                      <Text>{image.name}</Text>
+                    </Box>
+                  ))}
+              </>
+            )}
+          </InfiniteScroll>
         </>
       ) : (
         <Text>Loading...</Text>

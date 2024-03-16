@@ -13,4 +13,6 @@ router.use("/profile", userController.profile);
 
 router.use('/create-image', imageController.createImage)
 
+router.use("/get-images/:page/:size", imageController.getImages)
+
 module.exports = router;
