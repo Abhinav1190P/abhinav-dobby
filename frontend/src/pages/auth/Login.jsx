@@ -14,7 +14,6 @@ import {
   InputGroup,
   InputRightElement,
   Link as ChakraLink,
-
   Text,
   FormControl,
   FormLabel,
@@ -121,7 +120,7 @@ export default function SignIn() {
                 />
                 <InputRightElement>
                   <IconButton
-                    variant="ghost"
+
                     colorScheme="gray"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
@@ -132,15 +131,16 @@ export default function SignIn() {
               <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
             </FormControl>
 
-            {error && (
-              <FormHelperText color="red" fontSize="sm" mt={2}>
-                {error}
-              </FormHelperText>
-            )}
+            {/*        {error && (
+                            <FormHelperText color="red" fontSize="sm" mt={2}>
+                                {error}
+                            </FormHelperText>
+                        )} */}
 
             <Button
               mt={4}
-              colorScheme="primary"
+              bg={'#1E90F1'}
+              opacity={.8}
               isLoading={loading}
               type="submit"
               width="100%"
