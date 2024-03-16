@@ -61,9 +61,9 @@ const Signup = () => {
   const toast = useToast()
   const onSubmit = async (signupDetails) => {
     setSubmitting(true);
-  
+
     try {
-      const { data } = await axios.post("http://localhost:4000/api/auth/signup", signupDetails);
+      const { data } = await axios.post("https://abhinav-dobby-api.vercel.app/api/auth/signup", signupDetails);
       if (data.success) {
         toast({
           title: 'Account created',
@@ -97,7 +97,7 @@ const Signup = () => {
       setSubmitting(false);
     }
   };
-  
+
 
 
 
