@@ -1,7 +1,7 @@
 import LoadingScreen from "../components/LoadingScreen";
 import { createContext, useEffect, useReducer, useRef } from "react";
 import { axiosPrivate } from "../utils/axios";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { catchError } from "../utils/catchError";
 
 //initial State value

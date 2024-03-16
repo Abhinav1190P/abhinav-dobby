@@ -1,0 +1,18 @@
+2024-Mar-16(10:44:46 PM)	46e79816-9c49-4ecf-b99b-8253d65607a0	Error: 'abhinav@124' already registered!
+2024-Mar-16(10:46:24 PM)	3f492c83-92a5-4787-8a45-f8e0bc91b65a	Error: 'abhinav@124' already registered!
+2024-Mar-16(10:50:20 PM)	8eaa9082-bb95-470b-b6f1-999a3413a8b3	Error: Name is required, Email is required, Username is required, Password is required, Required
+2024-Mar-16(10:51:21 PM)	4c2fc290-864e-4f12-92c9-814ed135bdd3	Error: 'abhinav@124' already registered!
+2024-Mar-16(10:52:00 PM)	2e0decc5-9ede-4c2a-97d0-a61b8ccc8883	Error: 'abhinav@124' already registered!
+2024-Mar-16(10:52:58 PM)	bf7e9ec8-f83e-465d-bd21-a312b0bc8aa4	Error: 'abhinav@124' already registered!
+2024-Mar-16(10:53:20 PM)	f94b0c46-8008-450b-8c57-a88685687bc5	Error: 'abhinav@124' already registered!
+2024-Mar-16(10:54:12 PM)	4de2e2e2-f6fa-4817-b3b7-8c2dc4a0eb0d	Error: 'abhinav@124' already registered!
+2024-Mar-16(10:55:39 PM)	ccfdb74b-c0c6-4c5f-a0ed-62c7b92b1128	Error: 'abhinav@124' already registered!
+2024-Mar-16(10:55:53 PM)	1a6ca608-487b-48bc-9ab5-a0a75c21feac	MongoServerError: E11000 duplicate key error collection: dobby.auths index: email_1 dup key: { email: "pandeysandeep1190@gmail.com" }
+2024-Mar-16(10:56:11 PM)	ece65c5b-b5dc-468a-a8c7-202de1e796b9	MongoServerError: E11000 duplicate key error collection: dobby.auths index: email_1 dup key: { email: "pandeysandeep1190@gmail.com" }
+2024-Mar-16(10:57:14 PM)	ae208032-cc77-4106-b8f0-16603f183de2	MongoServerError: E11000 duplicate key error collection: dobby.auths index: email_1 dup key: { email: "pandeysandeep1190@gmail.com" }
+2024-Mar-16(10:57:32 PM)	f1a62bdc-bef6-4589-8f5a-83638562c62a	MongoServerError: E11000 duplicate key error collection: dobby.auths index: email_1 dup key: { email: "pandeysandeep1190@gmail.com" }
+2024-Mar-16(10:57:57 PM)	13f10c80-4f55-45a1-bf78-926d9bf18e99	MongoServerError: E11000 duplicate key error collection: dobby.auths index: email_1 dup key: { email: "pandeysandeep1190@gmail.com" }
+2024-Mar-16(10:59:39 PM)	78d5d54d-3e4e-491f-b9a9-0300a7dc1e45	MongoServerError: E11000 duplicate key error collection: dobby.auths index: email_1 dup key: { email: "pandeysandeep1190@gmail.com" }
+2024-Mar-16(11:02:30 PM)	b4af7a4c-1c97-4a32-84fb-75c72bbcd0d9	Error: 'ayus2h@124' already registered!
+2024-Mar-16(11:03:23 PM)	e5ce8e81-d013-4481-893c-0a0858a5ae16	MongooseError: Resource not found!
+2024-Mar-16(11:03:23 PM)	49ff3385-d7cc-426f-a849-158b5df29728	MongooseError: Resource not found!
