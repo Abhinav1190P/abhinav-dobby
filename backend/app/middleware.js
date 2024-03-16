@@ -17,7 +17,7 @@ const limiterOptions = {
 };
 
 const middleware = [
-  requestLogger, 
+  requestLogger,
   rateLimit(limiterOptions),
   helmet(),
   cors({
@@ -28,7 +28,7 @@ const middleware = [
   express.json(),
   cookieParser(),
   express.urlencoded({ extended: true }),
-  mongoSanitize(), 
+  mongoSanitize(),
 ];
 
 module.exports = middleware;

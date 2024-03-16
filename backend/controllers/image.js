@@ -31,7 +31,10 @@ const getImages = async (req, res, next) => {
         const skip = (page - 1) * size;
 
         const total = await Image.countDocuments({ userId: req.user.userId });
-        let images = await Image.find({userId:req.user.userId}).skip(skip).limit(size);
+        let images = await Image.find({ userId: req.user.userId })
+            .sort({ createdAt: -1 }) 
+            .skip(skip)
+            .limit(size);
 
         return res.json({ images, total });
     } catch (error) {
